@@ -44,6 +44,9 @@ class MainFragment : Fragment() {
         return myroot
     }
 
+    /*
+     onActivityCreated() - Called when Activity is created and the Views are created.
+     */
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
@@ -53,7 +56,10 @@ class MainFragment : Fragment() {
             dispatchTakePictureIntent()
         }
     }
-    
+
+    /*
+    dispatchTakePictureIntent() - my routine that creates an Intent to get an image from a camera app
+     */
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         
@@ -64,6 +70,9 @@ class MainFragment : Fragment() {
         }
     }
 
+    /*
+     onActivityResult() - Called when the Intent returns.  If a valid image is returned, then set that image in the ImageView (im)
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             imageBitmap = data!!.extras!!.get("data") as Bitmap
@@ -72,7 +81,12 @@ class MainFragment : Fragment() {
             imageLabeling(imageBitmap)
         }
     }
-    
+
+    /*
+     imageLabeling() - my routine that calls ML Kit ImageLabeling to get recognized objects (labels) with their associated accuracy.
+
+     Accuracy is how confident ML Kit feels about a recognized object in the image.
+     */
     private fun imageLabeling(mybitmap: Bitmap) {
         val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
         val image = InputImage.fromBitmap(mybitmap, 0)
@@ -80,14 +94,13 @@ class MainFragment : Fragment() {
 
         labeler.process(image).addOnSuccessListener { labels ->
             for (label in labels) {
-                val text = label.text
-                val confidence = label.confidence
-                outputText += "$text : $confidence\n"
+                val text = label.text                   // retrieve the label text
+                val confidence = label.confidence       // retrieve the confidence
+                outputText += "$text : $confidence\n"   // build a string for output
                 Log.i("Frank", "LOOP>     [$text]:$confidence")
             }
-            Log.i("Frank", "\n***** Labels\n")
-            Log.i("Frank", outputText)
-            
+            Log.i("Frank", "***** Labels\n $outputText")
+
         }.addOnFailureListener { e ->
             Log.e("Frank", "**Failure when processing image")
         }

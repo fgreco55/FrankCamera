@@ -1,21 +1,20 @@
 package com.example.frankcamera.ui.main
 
-import android.app.Activity.RESULT_OK
-import android.app.Application
-import android.content.ActivityNotFoundException
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.frankcamera.R
 import com.example.frankcamera.utility.ImagesCollection
 import com.example.frankcamera.utility.UtilityViewModel
@@ -29,16 +28,15 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-    private lateinit var uviewModel: UtilityViewModel
+    private lateinit var viewModel: MainViewModel       // AS created this one... I don't use it
+    private lateinit var uviewModel: UtilityViewModel   // My VM to handle my Utility methods
 
     private lateinit var cb: Button
     private lateinit var im: ImageView
-    private lateinit var imageBitmap: Bitmap
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private lateinit var ic: ImagesCollection
     private lateinit var rt: TextView
 
+    private lateinit var imageBitmap: Bitmap
+    private lateinit var ic: ImagesCollection           // ImagesCollection has random images
 
     /*
      onCreateView() - Instantiate the view hierarchy
@@ -47,10 +45,10 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        var myroot = inflater.inflate(R.layout.main_fragment, container, false)
+        val myroot = inflater.inflate(R.layout.main_fragment, container, false)
         cb = myroot!!.findViewById(R.id.takePicture_button)
-        im = myroot!!.findViewById(R.id.camera_imageview)
-        rt = myroot!!.findViewById(R.id.results_textview)
+        im = myroot.findViewById(R.id.camera_imageview)
+        rt = myroot.findViewById(R.id.results_textview)
 
         ic = ImagesCollection()     // My random images list
         return myroot
@@ -63,15 +61,18 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         uviewModel = ViewModelProvider(this).get(UtilityViewModel::class.java)
-        
-        cb.setOnClickListener { 
+
+        /*
+         Get Image button click handler
+         */
+        cb.setOnClickListener {
             Log.i("Frank", "Inside onClick()")
             handleImage()           // Either call the camera or pick an internal image
         }
         /*
          observe callback - notices when the LiveData bitmap is changed and then does the work.
          */
-        uviewModel.networkBitmap.observe(this, {
+        uviewModel.networkBitmap.observe(viewLifecycleOwner, {
             Log.i("Frank", "++++++++++ OBSERVER CALLED...")
             im.setImageBitmap(it)
             imageLabeling(it)
@@ -83,8 +84,9 @@ class MainFragment : Fragment() {
      */
     private fun handleImage() {
         //dispatchTakePictureIntent()       // Calls the camera
-        dispatchRandomImage()               // Gets a random image from internal list
+        dispatchRandomImage()               // Gets a random image from internal list... simulates random-image service
     }
+
     /*
      dispatchTakePictureIntent() - calls Coil lib to get Bitmap using a coroutine.  Bitmap returned to ViewModel.
          The observe callback in onActivityCreated notices the bitmap and sets the ImageView and calls ML Kit
@@ -97,28 +99,25 @@ class MainFragment : Fragment() {
     }
 
     /*
-    dispatchTakePictureIntent() - my routine that creates an Intent to get an image from a camera app
+     Called when Intent returns.  New way vs onActivityResult()
      */
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            imageBitmap = data!!.extras!!.get("data") as Bitmap
+            Log.i("Frank", "Setting Image...")
 
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        } catch (e: ActivityNotFoundException) {
-            Log.i("Frank", "*****ERROR.  Cannot start Camera app")
+            im.setImageBitmap(imageBitmap)
+            imageLabeling(imageBitmap)
         }
     }
 
     /*
-     onActivityResult() - Called when the Intent returns.  If a valid image is returned, then set that image in the ImageView (im)
+      dispatchTakePictureIntent() - my routine that creates an Intent to get an image from a camera app
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            imageBitmap = data!!.extras!!.get("data") as Bitmap
-            Log.i("Frank", "Setting Image...")
-            im.setImageBitmap(imageBitmap)
-            imageLabeling(imageBitmap)
-        }
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        resultLauncher.launch(takePictureIntent)
     }
 
     /*

@@ -23,8 +23,10 @@ class ImagesCollection() {
         "https://images.reverb.com/image/upload/s--tBhZamnS--/f_auto,t_large/v1601578200/fovidx8lsqfm4fix0mvn.jpg",
         "https://www.suhr.com/wp-content/uploads/SKU/01-STP-0041.jpg",
         "https://magazine-resources.tidal.com/uploads/2021/09/miles_davis_resized.jpg",
+        "https://ichef.bbci.co.uk/news/976/cpsprodpb/9926/production/_119360293_71a2a560-8ca1-4450-a322-4eaae522fea3.jpg",
         "https://img.kytary.com/eshop_ie/velky_v2/na/636824679358500000/d61badb1/64621731/prs-dgt-birds-dark-cherry-sunburst.jpg",
         "https://www.suhr.com/wp-content/uploads/SKU/01-ALT-0022.jpg",
+        "https://americansongwriter.com/wp-content/uploads/2012/09/PRS-Bass-Orchestra.jpg",   // I took this pic!
         "https://media.guitarcenter.com/is/image/MMGS7/J07969000003000-00-720x720.jpg",
         "https://sc1.musik-produktiv.com/img/guitargallery/thumbs/010123740/010123740_01_1280x1920.jpg",
         "https://media.rainpos.com/8400/prs_dgt_david_grissom_tremolo_electric_guitar_gold_top_3.jpg",

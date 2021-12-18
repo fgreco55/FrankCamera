@@ -24,6 +24,7 @@ class ImagesCollection() {
         "https://www.suhr.com/wp-content/uploads/SKU/01-STP-0041.jpg",
         "https://magazine-resources.tidal.com/uploads/2021/09/miles_davis_resized.jpg",
         "https://ichef.bbci.co.uk/news/976/cpsprodpb/9926/production/_119360293_71a2a560-8ca1-4450-a322-4eaae522fea3.jpg",
+        "https://storage.googleapis.com/petbacker/images/blog/2017/dog-and-cat-cover.jpg",
         "https://img.kytary.com/eshop_ie/velky_v2/na/636824679358500000/d61badb1/64621731/prs-dgt-birds-dark-cherry-sunburst.jpg",
         "https://www.suhr.com/wp-content/uploads/SKU/01-ALT-0022.jpg",
         "https://americansongwriter.com/wp-content/uploads/2012/09/PRS-Bass-Orchestra.jpg",   // I took this pic!
